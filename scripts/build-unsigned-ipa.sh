@@ -55,5 +55,5 @@ trap 'rm -rf "$TEMP_PACKAGE"' EXIT
 mkdir -p "$TEMP_PACKAGE/Payload"
 cp -R "$APP_PATH" "$TEMP_PACKAGE/Payload/"
 cd "$TEMP_PACKAGE"
-/usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$OUTPUT_DIR/AfterlightProtocol-unsigned.ipa"
-echo "Готово: $OUTPUT_DIR/AfterlightProtocol-unsigned.ipa"
+/usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$OUTPUT_DIR/AfterlightProtocol-v1.1-unsigned.ipa"
+echo "Готово: $OUTPUT_DIR/AfterlightProtocol-v1.1-unsigned.ipa"
