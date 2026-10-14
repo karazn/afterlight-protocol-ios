@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     runs-on: macos-15
@@ -65,3 +68,12 @@ jobs:
           path: AfterlightProtocol-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
+
+      - name: Publish IPA to artifact branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BLOB_SHA="$(git hash-object -w AfterlightProtocol-unsigned.ipa)"
+          TREE_SHA="$(printf '100644 blob %s\t%s\n' "$BLOB_SHA" 'AfterlightProtocol-unsigned.ipa' | git mktree)"
+          COMMIT_SHA="$(printf 'Unsigned IPA from workflow run %s\n' "$GITHUB_RUN_NUMBER" | git commit-tree "$TREE_SHA")"
+          git push --force origin "$COMMIT_SHA:refs/heads/ipa-artifacts"
