@@ -59,13 +59,13 @@ jobs:
           mkdir -p "$RUNNER_TEMP/AfterlightPackage/Payload"
           cp -R "$APP_PATH" "$RUNNER_TEMP/AfterlightPackage/Payload/"
           cd "$RUNNER_TEMP/AfterlightPackage"
-          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$GITHUB_WORKSPACE/AfterlightProtocol-v1.1-unsigned.ipa"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$GITHUB_WORKSPACE/AfterlightProtocol-v1.2-unsigned.ipa"
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AfterlightProtocol-v1.1-unsigned-ipa
-          path: AfterlightProtocol-v1.1-unsigned.ipa
+          name: AfterlightProtocol-v1.2-unsigned-ipa
+          path: AfterlightProtocol-v1.2-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          BLOB_SHA="$(git hash-object -w AfterlightProtocol-v1.1-unsigned.ipa)"
-          TREE_SHA="$(printf '100644 blob %s\t%s\n' "$BLOB_SHA" 'AfterlightProtocol-v1.1-unsigned.ipa' | git mktree)"
+          BLOB_SHA="$(git hash-object -w AfterlightProtocol-v1.2-unsigned.ipa)"
+          TREE_SHA="$(printf '100644 blob %s\t%s\n' "$BLOB_SHA" 'AfterlightProtocol-v1.2-unsigned.ipa' | git mktree)"
           COMMIT_SHA="$(printf 'Unsigned IPA from workflow run %s\n' "$GITHUB_RUN_NUMBER" | git commit-tree "$TREE_SHA")"
           git push --force origin "$COMMIT_SHA:refs/heads/ipa-artifacts"

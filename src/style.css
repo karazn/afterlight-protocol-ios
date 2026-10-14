@@ -1,7 +1,7 @@
-:root{font-family:'Trebuchet MS',system-ui,sans-serif;color:#e7fbff;background:#020609;font-synthesis:none;--cyan:#6cefff;--amber:#ff9f43;--red:#ff5369;touch-action:none}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+:root{font-family:'Trebuchet MS',system-ui,sans-serif;color:#e7fbff;background:#020609;font-synthesis:none;--cyan:#6cefff;--amber:#ff9f43;--red:#ff5369;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;touch-action:none}
 html,body,#app{position:fixed;inset:0;width:100%;height:100%;margin:0;overflow:hidden;background:#020609}
-#game{display:block;width:100%;height:100%;outline:none}
+#game{display:block;width:100%;height:100%;outline:none;touch-action:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .hidden{opacity:0!important;pointer-events:none!important}
 .screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s ease;background:radial-gradient(circle at 62% 44%,rgba(21,105,132,.22),transparent 35%),linear-gradient(90deg,rgba(1,5,8,.95) 0%,rgba(1,5,8,.76) 45%,rgba(1,5,8,.3) 100%),url('/key-art.png') center/cover}
 .screen.visible{opacity:1;pointer-events:auto}
