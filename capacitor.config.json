@@ -1,0 +1,12 @@
+{
+  "appId": "com.afterlight.protocol",
+  "appName": "Протокол Свет",
+  "webDir": "dist",
+  "backgroundColor": "#020609",
+  "ios": {
+    "contentInset": "automatic",
+    "allowsLinkPreview": false,
+    "preferredContentMode": "mobile",
+    "scrollEnabled": false
+  }
+}

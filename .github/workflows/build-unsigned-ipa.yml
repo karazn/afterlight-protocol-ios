@@ -1,0 +1,68 @@
+name: Build unsigned iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-ios:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install web dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build game and sync iOS
+        run: |
+          pnpm run build
+          pnpm exec cap sync ios
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios/App
+        run: pod install
+
+      - name: Build unsigned application
+        working-directory: ios/App
+        run: |
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/AfterlightDerived" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$RUNNER_TEMP/AfterlightDerived/Build/Products/Release-iphoneos/App.app"
+          test -d "$APP_PATH"
+          mkdir -p "$RUNNER_TEMP/AfterlightPackage/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/AfterlightPackage/Payload/"
+          cd "$RUNNER_TEMP/AfterlightPackage"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$GITHUB_WORKSPACE/AfterlightProtocol-unsigned.ipa"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AfterlightProtocol-unsigned-ipa
+          path: AfterlightProtocol-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7

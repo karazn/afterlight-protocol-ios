@@ -1,0 +1,9 @@
+node_modules/
+build/
+work/
+outputs/*.ipa
+outputs/*.zip
+ios/App/Pods/
+ios/App/DerivedData/
+*.xcuserstate
+.DS_Store

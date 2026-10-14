@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#020609" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Протокол: Свет</title>
+    <script type="module" crossorigin src="/assets/index-C4vIMdVx.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BpFbL-gv.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+
+      <section id="start-screen" class="screen visible">
+        <div class="hero-noise"></div>
+        <div class="title-wrap">
+          <div class="eyebrow">АВАРИЙНЫЙ ПРОТОКОЛ // СТАНЦИЯ N-13</div>
+          <h1>ПРОТОКОЛ<br /><span>СВЕТ</span></h1>
+          <p>Станция погасла. Найди 9 энергетических ядер, оживи три сектора и перезапусти центральный реактор.</p>
+          <button id="start-button" class="primary">НАЧАТЬ ВОССТАНОВЛЕНИЕ</button>
+          <div class="tips"><span>Левый палец — движение</span><span>Правый палец — камера</span><span>Импульс — защита</span></div>
+        </div>
+      </section>
+
+      <section id="hud" class="hud hidden">
+        <div class="topbar">
+          <div class="mission-card">
+            <span class="label">ТЕКУЩАЯ ЗАДАЧА</span>
+            <strong id="objective">Найдите ядра в секторе A</strong>
+          </div>
+          <div class="core-count"><span id="core-value">0</span><small>/ 9</small></div>
+        </div>
+        <div class="sector-strip">
+          <div class="sector active" data-sector="0"><i></i><span>A</span></div>
+          <div class="sector" data-sector="1"><i></i><span>B</span></div>
+          <div class="sector" data-sector="2"><i></i><span>C</span></div>
+          <div class="sector reactor" data-sector="3"><i></i><span>R</span></div>
+        </div>
+        <div class="vitals">
+          <span>КОСТЮМ</span>
+          <div class="health-track"><div id="health-fill"></div></div>
+        </div>
+        <div id="message" class="message"></div>
+        <div id="interact-hint" class="interact-hint">УДЕРЖИВАЙТЕ ПОЗИЦИЮ</div>
+      </section>
+
+      <div id="controls" class="controls hidden">
+        <div id="joystick-zone" class="joystick-zone">
+          <div class="joystick-ring"><div id="joystick-knob" class="joystick-knob"></div></div>
+        </div>
+        <div id="look-zone" class="look-zone"></div>
+        <button id="pulse-button" class="pulse-button"><span></span><b>ИМПУЛЬС</b><small id="pulse-cooldown">ГОТОВ</small></button>
+      </div>
+
+      <section id="pause-screen" class="screen compact">
+        <div class="modal">
+          <div class="eyebrow">СИСТЕМА ПРИОСТАНОВЛЕНА</div>
+          <h2>ПАУЗА</h2>
+          <button id="resume-button" class="primary">ПРОДОЛЖИТЬ</button>
+          <button id="restart-button" class="secondary">НАЧАТЬ ЗАНОВО</button>
+        </div>
+      </section>
+
+      <button id="pause-button" class="pause-button hidden" aria-label="Пауза">Ⅱ</button>
+
+      <section id="end-screen" class="screen compact">
+        <div class="modal ending">
+          <div class="eyebrow">ЭНЕРГОСЕТЬ СТАБИЛЬНА</div>
+          <h2>СВЕТ<br /><span>ВОЗВРАЩЁН</span></h2>
+          <p id="end-stats"></p>
+          <button id="again-button" class="primary">ПРОЙТИ ЕЩЁ РАЗ</button>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
