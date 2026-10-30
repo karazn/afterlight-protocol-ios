@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
-.venv/
+.venv*/
+*.egg-info/
 build/
 dist/
 *.spec.bak
@@ -8,4 +9,6 @@ dist/
 ios/*.xcodeproj/
 ios/DerivedData/
 tools/
+work/
+outputs/
 

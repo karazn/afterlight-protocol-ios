@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $Venv = Join-Path $ProjectRoot ".venv"
 if (-not (Test-Path -LiteralPath (Join-Path $Venv "Scripts\python.exe"))) {
-    py -3 -m venv $Venv
+    python -m venv $Venv
 }
 & (Join-Path $Venv "Scripts\python.exe") -m pip install --upgrade pip
 & (Join-Path $Venv "Scripts\python.exe") -m pip install -e $ProjectRoot
