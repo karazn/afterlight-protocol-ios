@@ -1,0 +1,46 @@
+name: iPhoneMirror
+options:
+  bundleIdPrefix: org.iphoneusbmirror
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+targets:
+  iPhoneMirror:
+    type: application
+    platform: iOS
+    sources: [iPhoneMirror]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.iphoneusbmirror.app
+        INFOPLIST_FILE: iPhoneMirror/Info.plist
+        CODE_SIGN_ENTITLEMENTS: iPhoneMirror/iPhoneMirror.entitlements
+        TARGETED_DEVICE_FAMILY: "1"
+    dependencies:
+      - target: BroadcastUploadExtension
+        embed: true
+  BroadcastUploadExtension:
+    type: app-extension
+    platform: iOS
+    sources: [BroadcastUploadExtension]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.iphoneusbmirror.app.broadcast
+        INFOPLIST_FILE: BroadcastUploadExtension/Info.plist
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  iPhoneMirror:
+    build:
+      targets:
+        iPhoneMirror: all
+        BroadcastUploadExtension: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+

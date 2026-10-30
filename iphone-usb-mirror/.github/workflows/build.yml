@@ -1,0 +1,65 @@
+name: Build Windows and iOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build EXE
+        shell: pwsh
+        run: ./scripts/build-windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iPhone-USB-Mirror-Windows
+          path: dist/iPhone-USB-Mirror/
+
+  ios-unsigned:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build unsigned device app
+        working-directory: ios
+        run: >-
+          xcodebuild -project iPhoneMirror.xcodeproj -scheme iPhoneMirror
+          -configuration Release -sdk iphoneos -derivedDataPath DerivedData
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$GITHUB_WORKSPACE/ios/DerivedData/Build/Products/Release-iphoneos/iPhoneMirror.app"
+          test -d "$APP_PATH"
+          mkdir -p "$RUNNER_TEMP/iPhoneMirrorPackage/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/iPhoneMirrorPackage/Payload/"
+          cd "$RUNNER_TEMP/iPhoneMirrorPackage"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$GITHUB_WORKSPACE/iPhone-USB-Mirror-unsigned.ipa"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iPhone-USB-Mirror-unsigned-IPA
+          path: iPhone-USB-Mirror-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish IPA to artifact branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BLOB_SHA="$(git hash-object -w iPhone-USB-Mirror-unsigned.ipa)"
+          TREE_SHA="$(printf '100644 blob %s\t%s\n' "$BLOB_SHA" 'iPhone-USB-Mirror-unsigned.ipa' | git mktree)"
+          COMMIT_SHA="$(printf 'Unsigned IPA from workflow run %s\n' "$GITHUB_RUN_NUMBER" | git commit-tree "$TREE_SHA")"
+          git push --force origin "$COMMIT_SHA:refs/heads/ipa-artifacts"
+

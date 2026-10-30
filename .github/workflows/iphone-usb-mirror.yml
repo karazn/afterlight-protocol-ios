@@ -1,0 +1,55 @@
+name: Build iPhone USB Mirror branch
+on:
+  workflow_dispatch:
+  push:
+    branches: [iphone-usb-mirror-build]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: iphone-usb-mirror
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build EXE
+        shell: pwsh
+        run: ./scripts/build-windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iPhone-USB-Mirror-Windows
+          path: iphone-usb-mirror/dist/iPhone-USB-Mirror/
+  ios-unsigned:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: iphone-usb-mirror/ios
+        run: xcodegen generate
+      - name: Build unsigned device app
+        working-directory: iphone-usb-mirror/ios
+        run: >-
+          xcodebuild -project iPhoneMirror.xcodeproj -scheme iPhoneMirror
+          -configuration Release -sdk iphoneos -derivedDataPath DerivedData
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM="" build
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$GITHUB_WORKSPACE/iphone-usb-mirror/ios/DerivedData/Build/Products/Release-iphoneos/iPhoneMirror.app"
+          test -d "$APP_PATH"
+          mkdir -p "$RUNNER_TEMP/iPhoneMirrorPackage/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/iPhoneMirrorPackage/Payload/"
+          cd "$RUNNER_TEMP/iPhoneMirrorPackage"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$GITHUB_WORKSPACE/iphone-usb-mirror/iPhone-USB-Mirror-unsigned.ipa"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iPhone-USB-Mirror-unsigned-IPA
+          path: iphone-usb-mirror/iPhone-USB-Mirror-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
