@@ -33,7 +33,13 @@ final class H264Encoder {
         pixelPool = pool
 
         var created: VTCompressionSession?
-        let specification = [kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder: true] as CFDictionary
+        let specification: CFDictionary?
+        if #available(iOS 17.4, *) {
+            specification = [kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder: true] as CFDictionary
+        } else {
+            // Older iOS versions still choose the built-in H.264 hardware encoder by default.
+            specification = nil
+        }
         let status = VTCompressionSessionCreate(
             allocator: kCFAllocatorDefault,
             width: Int32(width), height: Int32(height),
