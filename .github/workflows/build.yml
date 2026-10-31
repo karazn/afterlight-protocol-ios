@@ -3,7 +3,7 @@ name: Build Windows and iOS
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, codex/iphone-usb-mirror-fixes]
 
 permissions:
   contents: write
@@ -44,6 +44,7 @@ jobs:
         run: |
           APP_PATH="$GITHUB_WORKSPACE/ios/DerivedData/Build/Products/Release-iphoneos/iPhoneMirror.app"
           test -d "$APP_PATH"
+          test -d "$APP_PATH/PlugIns/BroadcastUploadExtension.appex"
           mkdir -p "$RUNNER_TEMP/iPhoneMirrorPackage/Payload"
           cp -R "$APP_PATH" "$RUNNER_TEMP/iPhoneMirrorPackage/Payload/"
           cd "$RUNNER_TEMP/iPhoneMirrorPackage"
