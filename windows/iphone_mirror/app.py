@@ -4,7 +4,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 
-from .ui import MainWindow
+from iphone_mirror.ui import MainWindow
 
 
 def main() -> int:
