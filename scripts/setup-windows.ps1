@@ -1,5 +1,13 @@
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
+if (Test-Path -LiteralPath (Join-Path $PSScriptRoot "iPhone-USB-Mirror.exe")) {
+    # Script was copied next to the packaged executable.
+    $ProjectRoot = $PSScriptRoot
+}
+elseif (Test-Path -LiteralPath (Join-Path $PSScriptRoot "iPhone-USB-Mirror\iPhone-USB-Mirror.exe")) {
+    # Script is at the root of the unpacked Windows distribution.
+    $ProjectRoot = Join-Path $PSScriptRoot "iPhone-USB-Mirror"
+}
 $ToolRoot = Join-Path $ProjectRoot "tools\libimobiledevice"
 $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("iphone-usb-mirror-" + [guid]::NewGuid().ToString("N"))
 
