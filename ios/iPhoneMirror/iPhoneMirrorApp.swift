@@ -23,7 +23,6 @@ struct ContentView: View {
                     .multilineTextAlignment(.center).foregroundStyle(.secondary)
                 BroadcastPicker()
                     .frame(width: 72, height: 72)
-                    .background(.blue, in: RoundedRectangle(cornerRadius: 18))
                 Text("iOS всегда требует вашего подтверждения перед захватом экрана.")
                     .font(.footnote).foregroundStyle(.secondary)
             }
@@ -35,18 +34,29 @@ struct ContentView: View {
 
 struct BroadcastPicker: UIViewRepresentable {
     func makeUIView(context: Context) -> RPSystemBroadcastPickerView {
-        let picker = RPSystemBroadcastPickerView(frame: .zero)
+        let picker = RPSystemBroadcastPickerView(
+            frame: CGRect(x: 0, y: 0, width: 72, height: 72)
+        )
         // Free sideloading tools may rewrite both the app and extension bundle IDs
         // while signing. Leaving this nil lets ReplayKit discover the installed
         // upload extension under its actual, post-signing identifier.
         picker.preferredExtension = nil
         picker.showsMicrophoneButton = false
+        picker.backgroundColor = .systemBlue
+        picker.layer.cornerRadius = 18
+        picker.clipsToBounds = true
         if let button = picker.subviews.compactMap({ $0 as? UIButton }).first {
+            button.frame = picker.bounds
+            button.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             button.setImage(UIImage(systemName: "play.fill"), for: .normal)
             button.tintColor = .white
         }
         return picker
     }
-    func updateUIView(_ uiView: RPSystemBroadcastPickerView, context: Context) {}
+    func updateUIView(_ uiView: RPSystemBroadcastPickerView, context: Context) {
+        if let button = uiView.subviews.compactMap({ $0 as? UIButton }).first {
+            button.frame = uiView.bounds
+        }
+    }
 }
 
