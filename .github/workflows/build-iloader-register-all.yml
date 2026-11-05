@@ -1,0 +1,58 @@
+name: Build iLoader with app-extension signing
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/iphone-usb-mirror-fixes]
+    paths:
+      - .github/workflows/build-iloader-register-all.yml
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Clone official iLoader 2.4.1
+        shell: pwsh
+        run: git clone --depth 1 --branch v2.4.1 https://github.com/nab138/iloader.git iloader
+
+      - name: Sign every embedded app extension separately
+        shell: pwsh
+        run: |
+          $Path = 'iloader/src-tauri/src/account.rs'
+          $Source = Get-Content -LiteralPath $Path -Raw
+          $Old = 'ExtensionsBehavior::ReuseMain'
+          $New = 'ExtensionsBehavior::RegisterAll'
+          if (($Source.Split($Old).Count - 1) -ne 1) {
+            throw "Expected exactly one $Old occurrence"
+          }
+          $Source.Replace($Old, $New) | Set-Content -LiteralPath $Path -NoNewline
+          Select-String -LiteralPath $Path -Pattern 'ExtensionsBehavior::RegisterAll'
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        working-directory: iloader
+        run: bun install --frozen-lockfile
+
+      - name: Build portable Windows executable
+        working-directory: iloader
+        run: bun run tauri build --no-bundle
+
+      - name: Verify output
+        shell: pwsh
+        run: |
+          $Exe = 'iloader/src-tauri/target/release/iloader.exe'
+          if (-not (Test-Path -LiteralPath $Exe)) { throw 'iloader.exe was not built' }
+          Get-Item -LiteralPath $Exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iLoader-2.4.1-RegisterAll-Windows
+          path: iloader/src-tauri/target/release/iloader.exe
+          if-no-files-found: error
+          retention-days: 14
